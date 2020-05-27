@@ -15,7 +15,7 @@ services:
       - node.name=maestro1
       - cluster.name=cluster-es
       - bootstrap.memory_lock=true
-      - discovery.seed_hosts=maestro1,maestro2,data1,data2,ingesta1,ingesta2,coordinador1
+      - discovery.seed_hosts=maestro1,maestro2,data1,data2,data3,data4,ingesta1,ingesta2,coordinador1
       - cluster.initial_master_nodes=maestro1,maestro2
       - "ES_JAVA_OPTS=-Xms140m -Xmx140m"
       - node.master=true
@@ -29,7 +29,7 @@ services:
         soft: -1
         hard: -1
     volumes:
-      - data01:/usr/share/elasticsearch/data
+      - maestro1:/usr/share/elasticsearch/data
     networks:
       - backnet
 
@@ -40,7 +40,7 @@ services:
       - node.name=maestro2
       - cluster.name=cluster-es
       - bootstrap.memory_lock=true
-      - discovery.seed_hosts=maestro1,maestro2,data1,data2,ingesta1,ingesta2,coordinador1
+      - discovery.seed_hosts=maestro1,maestro2,data1,data2,data3,data4,ingesta1,ingesta2,coordinador1
       - cluster.initial_master_nodes=maestro1,maestro2
       - "ES_JAVA_OPTS=-Xms140m -Xmx140m"
       - node.master=true
@@ -54,7 +54,7 @@ services:
         soft: -1
         hard: -1
     volumes:
-      - data02:/usr/share/elasticsearch/data
+      - maestro2:/usr/share/elasticsearch/data
     networks:
       - backnet
 
@@ -65,13 +65,14 @@ services:
       - node.name=data1
       - cluster.name=cluster-es
       - bootstrap.memory_lock=true
-      - discovery.seed_hosts=maestro1,maestro2,data1,data2,ingesta1,ingesta2,coordinador1
+      - discovery.seed_hosts=maestro1,maestro2,data1,data2,data3,data4,ingesta1,ingesta2,coordinador1
       - cluster.initial_master_nodes=maestro1,maestro2
       - "ES_JAVA_OPTS=-Xms140m -Xmx140m"
       - node.master=true
       - node.voting_only=true
       - node.data=true
       - node.ingest=false
+      - node.attr.color=rojo
       #- node.remote_cluster_client=false  #
       - cluster.remote.connect=false 
     ulimits:
@@ -79,7 +80,7 @@ services:
         soft: -1
         hard: -1
     volumes:
-      - data03:/usr/share/elasticsearch/data
+      - data01:/usr/share/elasticsearch/data
     networks:
       - backnet
 
@@ -90,12 +91,62 @@ services:
       - node.name=data2
       - cluster.name=cluster-es
       - bootstrap.memory_lock=true
-      - discovery.seed_hosts=maestro1,maestro2,data1,data2,ingesta1,ingesta2,coordinador1
+      - discovery.seed_hosts=maestro1,maestro2,data1,data2,data3,data4,ingesta1,ingesta2,coordinador1
       - "ES_JAVA_OPTS=-Xms140m -Xmx140m"
       - node.master=false
       - node.voting_only=false
       - node.data=true
       - node.ingest=false
+      - node.attr.color=rojo
+
+      #- node.remote_cluster_client=false  #
+      - cluster.remote.connect=false 
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - data02:/usr/share/elasticsearch/data
+    networks:
+      - backnet
+  data3:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.5.2
+    container_name: data3
+    environment:
+      - node.name=data3
+      - cluster.name=cluster-es
+      - bootstrap.memory_lock=true
+      - discovery.seed_hosts=maestro1,maestro2,data1,data2,data3,data4,ingesta1,ingesta2,coordinador1
+      - "ES_JAVA_OPTS=-Xms140m -Xmx140m"
+      - node.master=false
+      - node.voting_only=false
+      - node.data=true
+      - node.ingest=false
+      - node.attr.color=azul
+      #- node.remote_cluster_client=false  #
+      - cluster.remote.connect=false 
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - data03:/usr/share/elasticsearch/data
+    networks:
+      - backnet
+  data4:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.5.2
+    container_name: data4
+    environment:
+      - node.name=data4
+      - cluster.name=cluster-es
+      - bootstrap.memory_lock=true
+      - discovery.seed_hosts=maestro1,maestro2,data1,data2,data3,data4,ingesta1,ingesta2,coordinador1
+      - "ES_JAVA_OPTS=-Xms140m -Xmx140m"
+      - node.master=false
+      - node.voting_only=false
+      - node.data=true
+      - node.ingest=false
+      - node.attr.color=azul
       #- node.remote_cluster_client=false  #
       - cluster.remote.connect=false 
     ulimits:
@@ -106,7 +157,6 @@ services:
       - data04:/usr/share/elasticsearch/data
     networks:
       - backnet
-
   ingesta1:
     image: docker.elastic.co/elasticsearch/elasticsearch:7.5.2
     container_name: ingesta1
@@ -114,13 +164,13 @@ services:
       - node.name=ingesta1
       - cluster.name=cluster-es
       - bootstrap.memory_lock=true
-      - discovery.seed_hosts=maestro1,maestro2,data1,data2,ingesta1,ingesta2,coordinador1
+      - discovery.seed_hosts=maestro1,maestro2,data1,data2,data3,data4,ingesta1,ingesta2,coordinador1
       - "ES_JAVA_OPTS=-Xms140m -Xmx140m"
       - node.master=false
       - node.voting_only=false
       - node.data=false
       - node.ingest=true
-      - transport_host=_eth0_
+      - transport.host=_eth0_
       #- node.remote_cluster_client=false  #
       - cluster.remote.connect=false 
     ulimits:
@@ -128,7 +178,7 @@ services:
         soft: -1
         hard: -1
     volumes:
-      - data05:/usr/share/elasticsearch/data
+      - ingesta1:/usr/share/elasticsearch/data
     networks:
       - backnet
       - frontnet
@@ -140,13 +190,13 @@ services:
       - node.name=ingesta2
       - cluster.name=cluster-es
       - bootstrap.memory_lock=true
-      - discovery.seed_hosts=maestro1,maestro2,data1,data2,ingesta1,ingesta2,coordinador1
+      - discovery.seed_hosts=maestro1,maestro2,data1,data2,data3,data4,ingesta1,ingesta2,coordinador1
       - "ES_JAVA_OPTS=-Xms140m -Xmx140m"
       - node.master=false
       - node.voting_only=false
       - node.data=false
       - node.ingest=true
-      - transport_host=_eth0_
+      - transport.host=_eth0_
       #- node.remote_cluster_client=false  #
       - cluster.remote.connect=false 
     ulimits:
@@ -154,7 +204,7 @@ services:
         soft: -1
         hard: -1
     volumes:
-      - data06:/usr/share/elasticsearch/data
+      - ingesta2:/usr/share/elasticsearch/data
     networks:
       - backnet # eth0
       - frontnet # eth1
@@ -166,13 +216,13 @@ services:
       - node.name=coordinador1
       - cluster.name=cluster-es
       - bootstrap.memory_lock=true
-      - discovery.seed_hosts=maestro1,maestro2,data1,data2,ingesta1,ingesta2,coordinador1
+      - discovery.seed_hosts=maestro1,maestro2,data1,data2,data3,data4,ingesta1,ingesta2,coordinador1
       - "ES_JAVA_OPTS=-Xms140m -Xmx140m"
       - node.master=false
       - node.voting_only=false
       - node.data=false
       - node.ingest=false
-      - transport_host=_eth0_
+      - transport.host=_eth0_
       #- node.remote_cluster_client=false  #
       - cluster.remote.connect=false 
     ulimits:
@@ -180,7 +230,7 @@ services:
         soft: -1
         hard: -1
     volumes:
-      - data07:/usr/share/elasticsearch/data
+      - coordinador1:/usr/share/elasticsearch/data
     networks:
       - backnet
       - frontnet
@@ -193,17 +243,17 @@ services:
     networks:
       - frontnet
 
-#  kibana:
-#    image: docker.elastic.co/kibana/kibana:7.5.2
-#    container_name: kibana
-#    environment:
-#      ELASTICSEARCH_HOSTS: "http://nginx:8082"
-#      SERVER_NAME: "kibana"
-#      SERVER_HOST: "kibana"
-#      ELASTICSEARCH_USERNAME: "elastic"
-#      ELASTICSEARCH_PASSWORD: "password"
-#    networks:
-#      - frontnet
+  kibana:
+    image: docker.elastic.co/kibana/kibana:7.5.2
+    container_name: kibana
+    environment:
+      ELASTICSEARCH_HOSTS: "http://nginx:8082"
+      SERVER_NAME: "kibana"
+      SERVER_HOST: "kibana"
+      ELASTICSEARCH_USERNAME: "elastic"
+      ELASTICSEARCH_PASSWORD: "password"
+    networks:
+      - frontnet
 
   nginx: 
     image: nginx:latest
@@ -262,7 +312,36 @@ volumes:
       type: 'none'
       o: 'bind'
       device: '/var/elasticsearch/data07'
-      
+  ingesta1:
+    driver: local
+    driver_opts:
+      type: 'none'
+      o: 'bind'
+      device: '/var/elasticsearch/ingesta1'
+  ingesta2:
+    driver: local
+    driver_opts:
+      type: 'none'
+      o: 'bind'
+      device: '/var/elasticsearch/ingesta2'      
+  coordinador1:
+    driver: local
+    driver_opts:
+      type: 'none'
+      o: 'bind'
+      device: '/var/elasticsearch/coordinador1'     
+  maestro1:
+    driver: local
+    driver_opts:
+      type: 'none'
+      o: 'bind'
+      device: '/var/elasticsearch/maestro1'     
+  maestro2:
+    driver: local
+    driver_opts:
+      type: 'none'
+      o: 'bind'
+      device: '/var/elasticsearch/maestro2'     
 networks:
   backnet:
     ipam:
