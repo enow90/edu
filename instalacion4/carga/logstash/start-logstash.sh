@@ -1,0 +1,1 @@
+sudo /usr/share/logstash/bin/logstash -f /home/ubuntu/environment/edu/instalacion4/carga/logstash/apache-pipeline.conf 
