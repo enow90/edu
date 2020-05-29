@@ -22,8 +22,8 @@ services:
       - node.voting_only=false
       - node.data=false
       - node.ingest=false
-      #- node.remote_cluster_client=false  # 
       - cluster.remote.connect=false 
+      - xpack.security.enabled=true
     ulimits:
       memlock:
         soft: -1
@@ -47,7 +47,6 @@ services:
       - node.voting_only=false
       - node.data=false
       - node.ingest=false
-      # - node.remote_cluster_client=false  # 
       - cluster.remote.connect=false 
     ulimits:
       memlock:
@@ -73,7 +72,6 @@ services:
       - node.data=true
       - node.ingest=false
       - node.attr.color=rojo
-      #- node.remote_cluster_client=false  #
       - cluster.remote.connect=false 
     ulimits:
       memlock:
@@ -98,8 +96,6 @@ services:
       - node.data=true
       - node.ingest=false
       - node.attr.color=rojo
-
-      #- node.remote_cluster_client=false  #
       - cluster.remote.connect=false 
     ulimits:
       memlock:
@@ -123,7 +119,6 @@ services:
       - node.data=true
       - node.ingest=false
       - node.attr.color=azul
-      #- node.remote_cluster_client=false  #
       - cluster.remote.connect=false 
     ulimits:
       memlock:
@@ -147,7 +142,6 @@ services:
       - node.data=true
       - node.ingest=false
       - node.attr.color=azul
-      #- node.remote_cluster_client=false  #
       - cluster.remote.connect=false 
     ulimits:
       memlock:
@@ -171,7 +165,6 @@ services:
       - node.data=false
       - node.ingest=true
       - transport.host=_eth0_
-      #- node.remote_cluster_client=false  #
       - cluster.remote.connect=false 
     ulimits:
       memlock:
@@ -197,7 +190,6 @@ services:
       - node.data=false
       - node.ingest=true
       - transport.host=_eth0_
-      #- node.remote_cluster_client=false  #
       - cluster.remote.connect=false 
     ulimits:
       memlock:
@@ -223,7 +215,6 @@ services:
       - node.data=false
       - node.ingest=false
       - transport.host=_eth0_
-      #- node.remote_cluster_client=false  #
       - cluster.remote.connect=false 
     ulimits:
       memlock:
@@ -268,7 +259,21 @@ services:
     networks:
       - frontnet
       - publicnet
-      
+  create_certs:
+    container_name: create_certs
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.5.2
+    command: >
+      bash -c '
+        if [[ ! -f /certs/bundle.zip ]]; then
+          bin/elasticsearch-certutil cert --silent --pem --in config/certificates/instances.yml -out /certs/bundle.zip;
+          chown -R 1000:0 /certs
+        fi
+      '
+    user: "0"
+    working_dir: /usr/share/elasticsearch
+    volumes: 
+      - 'certsroot:/certs'
+      - '.:/usr/share/elasticsearch/config/certificates'
 volumes:
   data01:
     driver: local

@@ -4,7 +4,13 @@
        "properties": {
         "bytes" : {"type" : "integer"},
         "response" : {"type" : "integer"},
-        "clientip" : {"type" : "ip"}
+        "clientip" : {"type" : "ip"},
+        "geoip" : { 
+            "properties": {
+            "location" : {"type" : "geo_point"}
+           }
+            
+        }
        }
     }
 }
